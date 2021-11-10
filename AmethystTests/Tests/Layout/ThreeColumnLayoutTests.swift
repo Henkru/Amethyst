@@ -28,7 +28,8 @@ class ThreeColumnLayoutTests: QuickSpec {
                             numWindows: windowCount,
                             numMainPane: mainPaneCount,
                             screenSize: screenSize,
-                            mainPaneRatio: 0.5
+                            mainPaneRatio: 0.5,
+                            mainPaneOption: .full
                         ).count(.main)
                     }
 
@@ -46,7 +47,8 @@ class ThreeColumnLayoutTests: QuickSpec {
                             numWindows: windowCount,
                             numMainPane: mainPaneCount,
                             screenSize: screenSize,
-                            mainPaneRatio: 0.5
+                            mainPaneRatio: 0.5,
+                            mainPaneOption: .full
                         ).count(.secondary)
                     }
                     let tertiaryCount: (UInt) -> UInt = { windowCount -> UInt in
@@ -55,7 +57,8 @@ class ThreeColumnLayoutTests: QuickSpec {
                             numWindows: windowCount,
                             numMainPane: mainPaneCount,
                             screenSize: screenSize,
-                            mainPaneRatio: 0.5
+                            mainPaneRatio: 0.5,
+                            mainPaneOption: .full
                         ).count(.tertiary)
                     }
 
@@ -80,7 +83,8 @@ class ThreeColumnLayoutTests: QuickSpec {
                         numWindows: windowCount,
                         numMainPane: mainPaneCount,
                         screenSize: screenSize,
-                        mainPaneRatio: 0.5
+                        mainPaneRatio: 0.5,
+                        mainPaneOption: .full
                     ).height(pane)
                 }
 

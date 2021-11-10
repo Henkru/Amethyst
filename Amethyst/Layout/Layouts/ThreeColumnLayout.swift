@@ -25,6 +25,11 @@ enum Pane {
     case tertiary
 }
 
+enum MainPaneWidthOption {
+    case retain
+    case full
+}
+
 struct TriplePaneArrangement {
     /// number of windows in pane
     private let paneCount: [Pane: UInt]
@@ -49,7 +54,7 @@ struct TriplePaneArrangement {
         - screenSize: total size of the screen
         - mainPaneRatio: ratio of the screen taken by main pane
      */
-    init(mainPane: Column, numWindows: UInt, numMainPane: UInt, screenSize: CGSize, mainPaneRatio: CGFloat) {
+    init(mainPane: Column, numWindows: UInt, numMainPane: UInt, screenSize: CGSize, mainPaneRatio: CGFloat, mainPaneOption: MainPaneWidthOption) {
         // forward and reverse mapping of columns to their designations
         self.panePosition = {
             switch mainPane {
@@ -79,7 +84,7 @@ struct TriplePaneArrangement {
 
         // calculate widths
         let screenWidth = screenSize.width
-        let mainWindowWidth = secondaryPaneCount == 0 ? screenWidth : round(screenWidth * mainPaneRatio)
+        let mainWindowWidth = secondaryPaneCount == 0 && mainPaneOption == .full ? screenWidth : round(screenWidth * mainPaneRatio)
         let nonMainWindowWidth = round((screenWidth - mainWindowWidth) / 2)
         self.paneWindowWidth = [
             .main: mainWindowWidth,
@@ -147,6 +152,7 @@ struct TriplePaneArrangement {
 // not an actual Layout, just a base class for the three actual Layouts below
 class ThreeColumnLayout<Window: WindowType>: Layout<Window> {
     class var mainColumn: Column { fatalError("Must be implemented by subclass") }
+    class var mainPaneOption: MainPaneWidthOption { fatalError("Must be implemented by subclass") }
 
     enum CodingKeys: String, CodingKey {
         case mainPaneCount
@@ -186,7 +192,8 @@ class ThreeColumnLayout<Window: WindowType>: Layout<Window> {
             numWindows: UInt(windows.count),
             numMainPane: UInt(mainPaneCount),
             screenSize: screenFrame.size,
-            mainPaneRatio: mainPaneRatio
+            mainPaneRatio: mainPaneRatio,
+            mainPaneOption: type(of: self).mainPaneOption
         )
 
         return windows.reduce([]) { frameAssignments, window -> [FrameAssignmentOperation<Window>] in
@@ -252,12 +259,13 @@ extension ThreeColumnLayout {
     }
 }
 
-// implement the three variants
+// implement the four variants
 
 class ThreeColumnLeftLayout<Window: WindowType>: ThreeColumnLayout<Window>, PanedLayout {
     override static var layoutName: String { return "3Column Left" }
     override static var layoutKey: String { return "3column-left" }
     override static var mainColumn: Column { return .left }
+    override static var mainPaneOption: MainPaneWidthOption { return .full }
 }
 
 class ThreeColumnMiddleLayout<Window: WindowType>: ThreeColumnLayout<Window>, PanedLayout {
@@ -265,10 +273,19 @@ class ThreeColumnMiddleLayout<Window: WindowType>: ThreeColumnLayout<Window>, Pa
     // for backwards compatibility with users who still have 'middle-wide' in their active layouts
     override static var layoutKey: String { return "middle-wide" }
     override static var mainColumn: Column { return .middle }
+    override static var mainPaneOption: MainPaneWidthOption { return .full }
 }
 
 class ThreeColumnRightLayout<Window: WindowType>: ThreeColumnLayout<Window>, PanedLayout {
     override static var layoutName: String { return "3Column Right" }
     override static var layoutKey: String { return "3column-right" }
     override static var mainColumn: Column { return .right }
+    override static var mainPaneOption: MainPaneWidthOption { return .full }
+}
+
+class ThreeColumnMiddleRetainLayout<Window: WindowType>: ThreeColumnLayout<Window>, PanedLayout {
+    override static var layoutName: String { return "3Column Middle Retain" }
+    override static var layoutKey: String { return "3column-middle-retain" }
+    override static var mainColumn: Column { return .middle }
+    override static var mainPaneOption: MainPaneWidthOption { return .retain }
 }

@@ -20,6 +20,7 @@ enum LayoutType<Window: WindowType>: String, CaseIterable {
     case threeColumnLeft = "3column-left"
     case threeColumnMiddle = "middle-wide"
     case threeColumnRight = "3column-right"
+    case threeColumnMiddleRetain = "3column-middle-retain"
     case fullscreen = "fullscreen"
     case column = "column"
     case row = "row"
@@ -44,6 +45,8 @@ enum LayoutType<Window: WindowType>: String, CaseIterable {
             return ThreeColumnMiddleLayout<Window>.self
         case .threeColumnRight:
             return ThreeColumnRightLayout<Window>.self
+        case .threeColumnMiddleRetain:
+            return ThreeColumnMiddleRetainLayout<Window>.self
         case .fullscreen:
             return FullscreenLayout<Window>.self
         case .column:
@@ -116,6 +119,8 @@ enum LayoutType<Window: WindowType>: String, CaseIterable {
             return try JSONEncoder().encode(typedLayout)
         case let typedLayout as ThreeColumnRightLayout<Window>:
             return try JSONEncoder().encode(typedLayout)
+        case let typedLayout as ThreeColumnMiddleRetainLayout<Window>:
+            return try JSONEncoder().encode(typedLayout)
         case let typedLayout as FullscreenLayout<Window>:
             return try JSONEncoder().encode(typedLayout)
         case let typedLayout as ColumnLayout<Window>:
@@ -157,6 +162,8 @@ enum LayoutType<Window: WindowType>: String, CaseIterable {
             return try decoder.decode(ThreeColumnMiddleLayout.self, from: data)
         case .threeColumnRight:
             return try decoder.decode(ThreeColumnRightLayout.self, from: data)
+        case .threeColumnMiddleRetain:
+            return try decoder.decode(ThreeColumnMiddleRetainLayout.self, from: data)
         case .fullscreen:
             return try decoder.decode(FullscreenLayout.self, from: data)
         case .column:
